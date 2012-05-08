@@ -107,7 +107,8 @@ __interrupt void Port1_ISR (void)
     P1IFG &= ~(BIT2);                       // Clr flag that caused int
     P1IFG &= ~(BIT3);                       // Clr flag that caused int
   }
-             
+          
+  P1IFG = 0x00; 
 }
 
 // The ISR assumes the interrupt came from GDO0. GDO0 fires indicating that
@@ -134,7 +135,6 @@ __interrupt void Port2_ISR(void)
         }
         else 
         {
-          __delay_cycles(500000);
           // Send ACK
           // Build packet
           txBuffer[0] = 3;                        // Packet length
@@ -166,4 +166,5 @@ __interrupt void Port2_ISR(void)
   }
 
   TI_CC_GDO0_PxIFG &= ~TI_CC_GDO0_PIN;      // After pkt RX, this flag is set.
+  TI_CC_GDO0_PxIFG = 0x00;
 }
