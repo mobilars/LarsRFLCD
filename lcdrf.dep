@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>3615806027</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl430fn.r43</file>
+      <file>$TOOLKIT_DIR$\config\lnk430G2553.xcl</file>
+      <file>$TOOLKIT_DIR$\inc\msp430g2553.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\lcd.r43</file>
+      <file>$PROJ_DIR$\..\LarsLCD\main_lcd_chartest.c</file>
+      <file>$PROJ_DIR$\ti\TI_CC_spi.h</file>
+      <file>$PROJ_DIR$\lcd.h</file>
+      <file>$PROJ_DIR$\lcd_charset.c</file>
+      <file>$PROJ_DIR$\ti\CC1100-CC2500.c</file>
+      <file>$PROJ_DIR$\main_lcdrf.c</file>
+      <file>$PROJ_DIR$\ti\TI_CC_msp430.h</file>
+      <file>$PROJ_DIR$\ti\CC1100-CC2500.h</file>
+      <file>$PROJ_DIR$\lcd.c</file>
+      <file>$PROJ_DIR$\lcd_charset.h</file>
+      <file>$PROJ_DIR$\ti\TI_CC_CC1100-CC2500.h</file>
+      <file>$PROJ_DIR$\ti\include.h</file>
+      <file>$PROJ_DIR$\ti\TI_CC_hardware_board_launchpad.h</file>
+      <file>$PROJ_DIR$\ti\TI_CC_spi.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\lcd_charset.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\lcd_charset.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\lcd.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\main_lcdrf.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\main_lcdrf.pbi</file>
+      <file>$PROJ_DIR$\Debug\Exe\lcdrf.d43</file>
+      <file>$PROJ_DIR$\Debug\Obj\lcdrf.pbd</file>
+      <file>$TOOLKIT_DIR$\inc\msp430.h</file>
+      <file>$TOOLKIT_DIR$\inc\in430.h</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\TI_CC_spi.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\CC1100-CC2500.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\TI_CC_spi.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\CC1100-CC2500.pbi</file>
+      <file>$PROJ_DIR$\utils.c</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\lcd_charset.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 19</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ti\CC1100-CC2500.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 29</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 31</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 15 14 5 11 10 25 2 26 27 16</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 15 14 5 11 10 25 2 26 27 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main_lcdrf.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 21</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 22</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 15 14 5 11 10 25 2 26 27 16 6</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 15 14 5 11 10 25 2 26 27 16 6</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\lcd.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 3</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 20</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 25 2 26 27 6 13</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 25 2 26 27 6 13</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\ti\TI_CC_spi.c</name>
+      <outputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 30</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 28</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICC430</name>
+          <file> 15 14 5 11 10 25 2 26 27 16</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 15 14 5 11 10 25 2 26 27 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\lcdrf.d43</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 1 29 30 3 19 21 0</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Obj\lcdrf.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 31 28 20 18 22</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 23</file>
+        </tool>
+      </outputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs/>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+</project>
+
+
