@@ -41,6 +41,8 @@
 //------------------------------------------------------------------------------
 
 
+void RF_init();
+void RF_change_Power(char power);
 void writeRFSettings(void);
 void RFSendPacket(char *, char);
 char RFReceivePacket(char *, char *, char *);

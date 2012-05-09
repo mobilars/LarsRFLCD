@@ -15,32 +15,34 @@
 extern char paTable[];
 extern char paTableLen;
 
-char txBuffer[14];
+char txBuffer[14]; // = {11, 0x01, 0xCD, 0x86, 0x50, 0x37, 0x26, 0x1D, 0x17};;
 char rxBuffer[14];
 
-unsigned int pktcount = 0;
-unsigned int RXcount = 0;
-unsigned int ACKcount = 0;
+unsigned volatile int pktcount = 0;
+unsigned volatile int RXcount = 0;
+unsigned volatile int ACKcount = 0;
+unsigned volatile int powerLevel = 0;
+unsigned volatile int P1irqs = 0;
 
 void main (void)
 {
   WDTCTL = WDTPW + WDTHOLD;                 // Stop WDT
 
-  // 5ms delay to compensate for time to startup between MSP430 and CC1100/2500
-  __delay_cycles(50000);
+  // delay to compensate for time to startup between MSP430 and CC1100/2500
+  __delay_cycles(30000);
+  __delay_cycles(30000);
   
+  //setscreenmode(1);
   SPISetup();                               // Initialize SPI Display
   clear();
+ 
+  writeString(0,0,"TX:");
+  writeString(0,1,"AK:");
+  writeString(0,2,"RX:");
+  writeString(0,6,"PWR:000");
+  writeString(0,7,"0=HIGH");
   
-  writeString(0,0,"TX PKT:");
-  writeString(0,1,"RX ACK:");
-  writeString(0,2,"RX PKT: ");
-  
-  TI_CC_SPISetup();                         // Initialize SPI port
-
-  TI_CC_PowerupResetCCxxxx();               // Reset CCxxxx
-  writeRFSettings();                        // Write RF settings to config reg
-  TI_CC_SPIWriteBurstReg(TI_CCxxx0_PATABLE, paTable, paTableLen);  //Write PATABLE
+  RF_init();
 
   // Set button input for DIP board
   P1DIR &= ~(BIT1);
@@ -49,28 +51,11 @@ void main (void)
   P2REN |= BIT1 | BIT2;
   P1OUT |= BIT1;
   P2OUT |= BIT1 | BIT2;
+  P1IFG = 0x00;
+  P2IFG = 0x00;
   P1IE |= BIT1;
-  P2IE |= BIT0 | BIT1;
+  P2IE |= BIT1 | BIT2;
   
-  // Configure ports -- switch inputs, LEDs, GDO0 to RX packet info from CCxxxx
-  TI_CC_SW_PxREN |= TI_CC_SW1;               // Enable Pull up resistor
-  TI_CC_SW_PxOUT |= TI_CC_SW1;               // Enable pull up resistor
-  TI_CC_SW_PxIES |= TI_CC_SW1;               // Int on falling edge
-  TI_CC_SW_PxIFG &= ~(TI_CC_SW1);            // Clr flags
-  TI_CC_SW_PxIE |= TI_CC_SW1;                // Activate interrupt enables
-  //TI_CC_LED_PxOUT &= ~(TI_CC_LED1); // Outputs = 0
-  //TI_CC_LED_PxDIR |= TI_CC_LED1;// LED Direction to Outputs
-
-  TI_CC_GDO0_PxIES |= TI_CC_GDO0_PIN;       // Int on falling edge (end of pkt)
-  TI_CC_GDO0_PxIFG &= ~TI_CC_GDO0_PIN;      // Clear flag
-  TI_CC_GDO0_PxIE |= TI_CC_GDO0_PIN;        // Enable int on end of packet
-
-  TI_CC_SPIStrobe(TI_CCxxx0_SRX);           // Initialize CCxxxx in RX mode.
-                                            // When a pkt is received, it will
-                                            // signal on GDO0 and wake CPU
-  
-
-  //__bis_SR_register(LPM3_bits + GIE);       // Enter LPM3, enable interrupts
   __bis_SR_register(LPM0_bits + GIE);       // Enter LPM0, interrupts enabled
   
 }
@@ -80,13 +65,14 @@ void main (void)
 #pragma vector=PORT1_VECTOR
 __interrupt void Port1_ISR (void)
 {
+//  writeInt(0, 7, ++P1irqs,3);
+//  writeInt(0, 8, P1IFG,3);
   
   // If Switch was pressed
-  if(P1IFG & BIT2 || P1IFG & BIT3)
+  if(P1IFG & BIT1 || P1IFG & BIT3)
   {
-  
     // Build packet
-    txBuffer[0] = 11;                        // Packet length
+    txBuffer[0] = 5;                        // Packet length
     txBuffer[1] = 0x01;                     // Packet address
     txBuffer[2] = 0x11;
     txBuffer[3] = 0x32;
@@ -95,17 +81,19 @@ __interrupt void Port1_ISR (void)
     txBuffer[6] = 0x35;
     txBuffer[7] = 0x36;
     txBuffer[8] = 0x37;
-    txBuffer[9] = 0x38;
-    txBuffer[10] = 0x39;
-    txBuffer[11] = 0x40;
           
-    RFSendPacket(txBuffer, 12);             // Send value over RF
-    __delay_cycles(5000);                   // Switch debounce
+    // Very stupid debounce mechanism. 
+    __delay_cycles(30000);
+    __delay_cycles(30000);
+    __delay_cycles(30000);
+    __delay_cycles(30000);
+    __delay_cycles(30000);
+    __delay_cycles(30000);                   // Switch debounce
     
-    writeString(0,0,"TX PKT:");
-    writeInt(75, 0, ++pktcount,3);
-    P1IFG &= ~(BIT2);                       // Clr flag that caused int
-    P1IFG &= ~(BIT3);                       // Clr flag that caused int
+    writeString(0,0,"TX:");
+    writeInt(35, 0, ++pktcount,3);
+    
+    RFSendPacket(txBuffer, 6);             // Send value over RF
   }
           
   P1IFG = 0x00; 
@@ -116,22 +104,20 @@ __interrupt void Port1_ISR (void)
 #pragma vector=PORT2_VECTOR
 __interrupt void Port2_ISR(void)
 {
-    // if GDO fired
+    
+  //writeInt(0, 8, P2IFG,3);
+  
+  // if GDO fired
   if(TI_CC_GDO0_PxIFG & TI_CC_GDO0_PIN)
   {
     char status[2];
-    char len=12;                            // Len of pkt to be RXed (only addr
-                                            // plus data; size byte not incl b/c
-                                            // stripped away within RX function)
+    char len=12;                            
     if (RFReceivePacket(rxBuffer, &len, status))  
-    {   
-        // Fetch packet from CCxxxx
-        //TI_CC_LED_PxOUT ^= rxBuffer[1];         // Toggle LEDs according to pkt data
-           
+    {              
         if (rxBuffer[1] == 0xFF) 
         {
-            writeString(0,1,"RX ACK:");
-            writeInt(75, 1, ++ACKcount,3);
+            writeString(0,1,"AK:");
+            writeInt(35, 1, ++ACKcount,3);
         }
         else 
         {
@@ -143,28 +129,43 @@ __interrupt void Port2_ISR(void)
           txBuffer[3] = 0x00;
 
           RFSendPacket(txBuffer, 4);              // Send value over RF
-          writeString(0,2,"RX PKT: ");
-          writeInt(75, 2, ++RXcount,3);
+          writeString(0,2,"RX: ");
+          writeInt(35, 2, ++RXcount,3);
         }
-        
-        writeString(0,3,"STATUS: ");
-        writeHex(60, 3, status[0]);
-        writeHex(75, 3, status[1]);
       
-        
+        writeString(0,4,"RSSI:");
         int rssi_in_dBs = ( (int)( (signed char)status[0] ) - 2 * 74 + 1 ) >> 1; 
         if (rssi_in_dBs < 0) {
-            writeString(0,4,"RSSI: -");
-            writeInt(40, 4, -rssi_in_dBs,3);
+            writeString(0,5,"-");
+            writeInt(10, 5, -rssi_in_dBs,3);
         } 
         else {
             writeString(0,4,"RSSI: ");
-            writeInt(30, 4, rssi_in_dBs,5);
+            writeInt(0, 5, rssi_in_dBs,5);
         }
         
      }
+    else {
+      //writeInt(0, 7, len,3);
+      //writeInt(20, 7, status[0],3);
+      //writeInt(40, 7, status[1],3);
+    }
+  }
+  
+  if(P2IFG & BIT1 || P2IFG & BIT2)
+  {
+    // Oi. This is a very stupid way to do debouncing... Sorry. 
+    __delay_cycles(30000);
+    __delay_cycles(30000);
+    __delay_cycles(30000); 
+    __delay_cycles(30000);
+    powerLevel++;
+    if (powerLevel > 9) {
+      powerLevel = 0;
+    }
+    RF_change_Power(powerLevel);
+    writeInt(60, 6, powerLevel,3);
   }
 
-  TI_CC_GDO0_PxIFG &= ~TI_CC_GDO0_PIN;      // After pkt RX, this flag is set.
-  TI_CC_GDO0_PxIFG = 0x00;
+  P2IFG = 0x00;
 }
